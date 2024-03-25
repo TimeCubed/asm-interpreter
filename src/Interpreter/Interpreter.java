@@ -39,25 +39,26 @@ public class Interpreter {
 	private final int[] progMem;
 	
 	public Interpreter() {
-		// Initialize the program counter, memory and stack
-		programCounter = 0;
+		// Initialize memory, stack and call stack
 		
 		stack = new Stack(STACK_SIZE);
 		callStack = new Stack(CALL_STACK_SIZE);
 		memory = new Memory(MEM_SIZE);
 		
-		// Initialize the data registers
+		// Initialize each data register
 		for (int i = 0; i < registers.length; i++) {
 			registers[i] = new Register(0);
 		}
 		
-		// Initialize the flag register
+		// Initialize the flags register
 		for (int i = 0; i < flags.length; i++) {
 			flags[i] = new Register(0);
 		}
 		
 		// Initialize program memory
-		// Each 8 bit value represents a possible instruction
+		// Each 8 bit value represents a possible instruction/argument
+		
+		// This is a test program to test each instruction
 		progMem = new int[] {
 				LDI, 0x0, 0x123,
 				MOV, 0x0, 0x1,
@@ -80,6 +81,11 @@ public class Interpreter {
 			int lastOperationVal = 0;
 			
 			switch (progMem[programCounter]) {
+				// Each instruction is expected to advance the program counter by itself.
+				// I couldn't find a simple way to automatically advance the program counter,
+				// so I had to settle for this instead.
+				
+				// Each instruction should be added here as its own separate switch case
 				case OUT -> {
 					if (progMem.length - programCounter < 2) {
 						throw new UnfinishedInstructionException(programCounter);
@@ -149,7 +155,6 @@ public class Interpreter {
 					
 					programCounter += 3;
 				}
-				// Load immediate value to register
 				case LDI -> {
 					if (progMem.length - programCounter < 2) {
 						throw new UnfinishedInstructionException(programCounter);
@@ -241,7 +246,8 @@ public class Interpreter {
 			flags[ZERO_FLAG].write(0);
 		}
 		
-		int CARRY_FLAG = 1;
+		// TODO: implement carry
+//		int CARRY_FLAG = 1;
 		
 		int SIGN_FLAG = 2;
 		if (lastReturn < 0) {

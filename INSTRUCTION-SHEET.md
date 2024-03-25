@@ -8,45 +8,46 @@ A -> H: General purpose data registers
 
 ## Miscellaneous
 HLT -> HaLT execution
+OUT r -> OUTput register
 
 ## Data Instructions
-MOV -> MOVe value from register to register
-LDM -> LoaD value from Memory to register
-LDI -> LoaD Immediate value to register
-STV -> STore Value from register in memory
-POP -> POP value from stack and move it to a register
-PSH -> PuSH value to stack from a register
+MOV r1, r2  -> MOVe value from register to register
+LDM r, addr -> LoaD value from Memory to register
+LDI r, val  -> LoaD Immediate value to register
+STV r, addr -> STore Value from register in memory
+POP r       -> POP value from stack and move it to a register
+PSH r       -> PuSH value to stack from a register
 
 ## Arithmetic and logic instructions
-ADM -> ADd value from Memory to register
-SBM -> SuBtract from register by a value from memory
-MLM -> MuLtiply register by value from Memory
-DVM -> DiVide register by value from Memory
+ADM r, addr -> ADd value from Memory to register
+SBM r, addr -> SuBtract from register by a value from memory
+MLM r, addr -> MuLtiply register by value from Memory
+DVM r, addr -> DiVide register by value from Memory
 
-ADR -> ADd value from Register to register
-SBR -> SuBtract from register by value from Register
-MLR -> MuLtiply register by value from Register
-DVR -> DiVide register by value from Register
+ADR r1, r2  -> ADd value from Register to register
+SBR r1, r2  -> SuBtract from register by value from Register
+MLR r1, r2  -> MuLtiply register by value from Register
+DVR r1, r2  -> DiVide register by value from Register
 
-AND -> bitwise AND operator between two registers
-NOT -> bitwise NOT operator between two registers
-OR  -> bitwise OR operator between two registers
-XOR -> bitwise XOR operator between two registers
-SHR -> SHift register value Right
-SHL -> SHift register value Left
-ROR -> ROtate register value Right
-ROL -> ROtate register value Left
+AND r1, r2  -> bitwise AND operator between two registers
+NOT r1, r2  -> bitwise NOT operator between two registers
+OR  r1, r2  -> bitwise OR operator between two registers
+XOR r1, r2  -> bitwise XOR operator between two registers
+SHR r1, r2  -> SHift register value Right
+SHL r1, r2  -> SHift register value Left
+ROR r       -> ROtate register value Right
+ROL r       -> ROtate register value Left
 
 CMP -> CoMPare two registers (equal = 1, not equal = 0)
 
 ## Jump Instructions (for all the turing completeness)
-JMP -> JuMP unconditionally
-JNZ -> Jump if Not Zero
-JPZ -> JumP if Zero
-JPC -> JumP if Carry
-JPP -> JumP if Positive
-JSR -> Jump to SubRoutine
-RET -> RETurn from subroutine
+JMP addr    -> JuMP unconditionally
+JNZ addr    -> Jump if Not Zero
+JPZ addr    -> JumP if Zero
+JPC addr    -> JumP if Carry
+JPP addr    -> JumP if Positive
+JSR addr    -> Jump to SubRoutine
+RET addr    -> RETurn from subroutine
 
 ## Currently implemented instructions:
 OUT, HLT, MOV, LDM, LDI, STV, POP, PSH

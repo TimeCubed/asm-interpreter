@@ -26,15 +26,26 @@ public class Interpreter {
 	// Flags register
 	private final Register[] flags = new Register[4];
 	
+	// Register shorthands
+	private static final int REG_1 = 0;
+	private static final int REG_2 = 1;
+	private static final int REG_3 = 2;
+	private static final int REG_4 = 3;
+	private static final int REG_5 = 4;
+	private static final int REG_6 = 5;
+	private static final int REG_7 = 6;
+	private static final int REG_8 = 7;
+	
 	// Instruction IDs
-	public static final int OUT = 0b00000000;
-	public static final int HLT = 0b00000001;
-	public static final int MOV = 0b00000010; // MOV r1, r2
-	public static final int LDM = 0b00000011; // LDM r1, addr
-	public static final int LDI = 0b00000100; // LDI r1, val
-	public static final int STV = 0b00000101; // STV r1, addr
-	public static final int POP = 0b00000110; // POP r1
-	public static final int PSH = 0b00000111; // PSH r1
+	private static final int OUT = 0b00000000;
+	private static final int HLT = 0b00000001;
+	private static final int MOV = 0b00000010; // MOV r1, r2
+	private static final int LDM = 0b00000011; // LDM r1, addr
+	private static final int LDI = 0b00000100; // LDI r1, val
+	private static final int STV = 0b00000101; // STV r1, addr
+	private static final int POP = 0b00000110; // POP r1
+	private static final int PSH = 0b00000111; // PSH r1
+	private static final int ADM = 0b00001000;
 	
 	private final int[] progMem;
 	
@@ -60,16 +71,18 @@ public class Interpreter {
 		
 		// This is a test program to test each instruction
 		progMem = new int[] {
-				LDI, 0x0, 0x123,
-				MOV, 0x0, 0x1,
-				OUT, 0x1,
-				STV, 0x1, 0x0,
-				LDM, 0x2, 0x0,
-				OUT, 0x2,
-				LDI, 0x3, 0x1,
-				PSH, 0x3,
-				POP, 0x4,
-				OUT, 0x4,
+				LDI, REG_1, 0x123,
+				MOV, REG_1, REG_2,
+				OUT, REG_1,
+				STV, REG_2, 0x0,
+				LDM, REG_3, 0x0,
+				OUT, REG_3,
+				LDI, REG_4, 0x1,
+				PSH, REG_4,
+				POP, REG_5,
+				OUT, REG_5,
+				ADM, REG_1, 0x0,
+				OUT, REG_1,
 		};
 	}
 	
@@ -97,12 +110,11 @@ public class Interpreter {
 						throw new InvalidRegisterException(register);
 					}
 					
-					System.out.println(programCounter + " Output from register " + register + ": " + registers[register].read());
+					System.out.println(programCounter + " Output from register " + (register + 1) + ": " + registers[register].read());
 					lastOperationVal = registers[register].read();
 					
 					programCounter += 2;
 				}
-				// Halt program
 				case HLT -> {
 					long msEndTime = System.currentTimeMillis();
 					
@@ -110,7 +122,6 @@ public class Interpreter {
 					
 					return;
 				}
-				// Move value from first register to second register
 				case MOV -> {
 					if (progMem.length - programCounter < 3) {
 						throw new UnfinishedInstructionException(programCounter);
@@ -127,7 +138,7 @@ public class Interpreter {
 						throw new InvalidRegisterException(register2);
 					}
 					
-					System.out.println(programCounter + " Moving value from register " + register1 + " to register " + register2);
+					System.out.println(programCounter + " Moving value from register " + (register1 + 1) + " to register " + (register2 + 1));
 					
 					registers[register2].write(registers[register1].read());
 					
@@ -135,7 +146,6 @@ public class Interpreter {
 					
 					programCounter += 3;
 				}
-				// Load from memory
 				case LDM -> {
 					if (progMem.length - programCounter < 3) {
 						throw new UnfinishedInstructionException(programCounter);
@@ -148,7 +158,7 @@ public class Interpreter {
 						throw new InvalidRegisterException(register);
 					}
 					
-					System.out.println(programCounter + " Loading value from address " + address + " to register " + register);
+					System.out.println(programCounter + " Loading value from address " + address + " to register " + (register + 1));
 					
 					registers[register].write(memory.read(address));
 					lastOperationVal = registers[register].read();
@@ -167,7 +177,7 @@ public class Interpreter {
 						throw new InvalidRegisterException(register);
 					}
 					
-					System.out.println(programCounter + " Writing value " + value + " to register " + register);
+					System.out.println(programCounter + " Writing value " + value + " to register " + (register + 1));
 					
 					registers[register].write(value);
 					lastOperationVal = registers[register].read();
@@ -186,7 +196,7 @@ public class Interpreter {
 						throw new InvalidRegisterException(register);
 					}
 					
-					System.out.println(programCounter + " Writing value " + registers[register].read() + " from register " + register + " to memory at address " + address);
+					System.out.println(programCounter + " Writing value " + registers[register].read() + " from register " + (register + 1) + " to memory at address " + address);
 					
 					memory.write(address, registers[register].read());
 					
@@ -203,7 +213,7 @@ public class Interpreter {
 						throw new InvalidRegisterException(register);
 					}
 					
-					System.out.println(programCounter + " Popping value from stack to register " + register);
+					System.out.println(programCounter + " Popping value from stack to register " + (register + 1));
 					
 					registers[register].write(stack.pop());
 					
@@ -227,6 +237,24 @@ public class Interpreter {
 					
 					lastOperationVal = registers[register].read();
 					programCounter += 2;
+				}
+				case ADM -> {
+					if (progMem.length - programCounter < 3) {
+						throw new UnfinishedInstructionException(programCounter);
+					}
+					
+					int register = progMem[programCounter + 1];
+					
+					if (register < 0 || register > MAX_REGISTERS) {
+						throw new InvalidRegisterException(register);
+					}
+					
+					System.out.println(programCounter + " Adding memory value " + memory.read(progMem[programCounter + 2]) + " to register " + (register + 1));
+					
+					registers[register].add(memory.read(progMem[programCounter + 2]));
+					
+					lastOperationVal = registers[register].read();
+					programCounter += 3;
 				}
 			}
 			
